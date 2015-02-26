@@ -751,6 +751,17 @@ class REST extends \Codeception\Module
         $this->assertNotEquals($code, $this->client->getInternalResponse()->getStatus());
     }
 
+    public function seeJsonMatchesSchema($file)
+    {
+        $retriever = new \JsonSchema\Uri\UriRetriever();
+        $schema = $retriever->retrieve('file://' . realpath($file));
+        $data = json_decode($this->response);
+        $validator = new \JsonSchema\Validator();
+        $validator->check($data, $schema);
+
+        $this->assertEquals(true, $validator->isValid());
+    }
+
     protected function prepareConnection()
     {
         if ($this->connectionModule) {
